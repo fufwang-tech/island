@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>如果你也喜欢台女·文艺人格测试</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Serif+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #F8F6F1;
+            --text-color: #4A4A48;
+            --accent-green: #8B9A7D;
+            --accent-pink: #D4B5A8;
+            --accent-pink-light: #E8D5CC;
+            --border-color: #C5C5C0;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* 背景装饰 */
+        .bg-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+        }
+
+        .bg-decoration::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(ellipse at center, var(--accent-green) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .bg-decoration::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: -5%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(ellipse at center, var(--accent-pink) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(50px);
+        }
+
+        .plant-line {
+            position: absolute;
+            stroke: var(--accent-green);
+            stroke-width: 1;
+            fill: none;
+            opacity: 0.3;
+        }
+
+        /* 容器 */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 开始页 */
+        .start-page {
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .start-page h1 {
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+            font-size: 2.2rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .start-page .subtitle {
+            font-size: 0.95rem;
+            color: var(--accent-green);
+            letter-spacing: 0.1em;
+            margin-bottom: 60px;
+            font-weight: 300;
+        }
+
+        .start-page .divider {
+            width: 60px;
+            height: 1px;
+            background: var(--border-color);
+            margin: 0 auto 60px;
+        }
+
+        .start-btn {
+            display: inline-block;
+            padding: 16px 48px;
+            background: transparent;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .start-btn:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        /* 题目页 */
+        .quiz-page {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .progress {
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            letter-spacing: 0.15em;
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            line-height: 2;
+            color: var(--text-color);
+            font-weight: 400;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .option {
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+
+            /* 核心修复：开启 Flex 布局 */
+            display: flex;
+            align-items: flex-start; 
+            gap: 12px;
+        }
+
+        .option:hover {
+            border-color: var(--accent-green);
+            background: rgba(139, 154, 125, 0.08);
+        }
+
+        .option-label {
+           flex-shrink: 0; /* 防止序号被挤压成椭圆 */
+            width: 28px;
+            height: 28px;
+            line-height: 26px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .option:hover .option-label {
+            border-color: var(--accent-green);
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .option-text {
+           flex: 1; /* 让文字占据剩余空间，自动换行且对齐 */
+           font-size: 0.95rem;
+           color: var(--text-color);
+           line-height: 1.6;
+           word-break: break-word;
+           padding-top: 2px; /* 让文字中心与序号圆圈对齐 */
+        }
+
+        /* 结果页 */
+        .result-page {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            letter-spacing: 0.2em;
+            margin-bottom: 20px;
+        }
+
+        .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .result-name {
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+            font-size: 2rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            margin-bottom: 30px;
+            color: var(--text-color);
+        }
+
+        .result-lyric {
+            font-size: 1rem;
+            color: var(--accent-green);
+            font-style: italic;
+            margin-bottom: 30px;
+            padding: 0 20px;
+            line-height: 1.9;
+        }
+
+        .result-desc {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            margin-bottom: 50px;
+            padding: 0 20px;
+            line-height: 2;
+        }
+
+        .result-divider {
+            width: 40px;
+            height: 1px;
+            background: var(--accent-pink);
+            margin: 0 auto 50px;
+        }
+
+        /* 结果页面底部提示文字 */
+        .result-note {
+            font-size: 0.6rem;
+            color: var(--accent-green);
+            opacity: 0.7;
+            text-align: center;
+            margin-top: 30px;
+            letter-spacing: 0.05em;
+            line-height: 1.5;
+            padding: 0 20px;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .result-note {
+                font-size: 0.75rem;
+                margin-top: 25px;
+                padding: 0 15px;
+            }
+        }
+
+        .result-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .share-btn, .restart-btn {
+            padding: 14px 40px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .share-btn {
+            background: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            color: white;
+        }
+
+        .share-btn:hover {
+            background: transparent;
+            color: var(--accent-green);
+        }
+
+        .restart-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .restart-btn:hover {
+            border-color: var(--text-color);
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .aplayer {
+            width: 100% !important;
+            max-width: 320px;
+        }
+
+        .aplayer * {
+            box-sizing: border-box;
+        }
+
+        /* MetingJS播放器样式优化 */
+        .spotify-player meting-js {
+            display: block;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 自定义APlayer主题色以匹配网站 */
+        .aplayer {
+            --aplayer-theme: #8B9A7D; /* 主色调使用您的accent-green */
+            --aplayer-lrc-color: #4A4A48; /* 歌词颜色 */
+            --aplayer-list-hover: rgba(139, 154, 125, 0.1); /* 列表悬停背景 */
+            --aplayer-list-bg: #F8F6F1; /* 列表背景 */
+            font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+        }
+
+        /* 播放器控制栏 */
+        .aplayer .aplayer-body .aplayer-info .aplayer-music .aplayer-title {
+            color: #4A4A48;
+            font-weight: 500;
+        }
+
+        .aplayer .aplayer-body .aplayer-info .aplayer-music .aplayer-author {
+            color: #8B9A7D;
+        }
+
+        /* 进度条 */
+        .aplayer .aplayer-body .aplayer-info .aplayer-cont .aplayer-bar-wrap .aplayer-bar {
+            background: rgba(139, 154, 125, 0.2);
+        }
+
+        .aplayer .aplayer-body .aplayer-info .aplayer-cont .aplayer-bar-wrap .aplayer-bar .aplayer-played {
+            background: #8B9A7D;
+        }
+
+        .aplayer .aplayer-body .aplayer-info .aplayer-cont .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb {
+            background: #8B9A7D;
+            box-shadow: 0 0 5px rgba(139, 154, 125, 0.5);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .spotify-player meting-js {
+                border-radius: 8px;
+            }
+            
+            .aplayer {
+                font-size: 13px;
+            }
+            
+            .aplayer .aplayer-list ol li {
+                padding: 8px 12px;
+            }
+        }
+
+        /* Spotify播放器样式 */
+        .spotify-section {
+            margin: 30px 0;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .spotify-label {
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             gap: 8px;
+        }
+
+        .spotify-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #1DB954;
+            color: white;
+            text-decoration: none;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(29, 185, 84, 0.2);
+        }
+
+        .spotify-button:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+        }
+
+        .spotify-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(29, 185, 84, 0.2);
+        }
+
+        /* Spotify内嵌播放器样式 */
+        .spotify-player {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 213, 204, 0.3);
+        }
+
+        .spotify-player iframe {
+            border-radius: 12px;
+            border: none;
+            width: 100%;
+            height: 80px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .spotify-player {
+            width: 100%;
+            max-width: 400px; /* 限制最大宽度，防止在大屏太散 */
+            margin: 0 auto;
+            overflow: hidden; /* 强制切除溢出部分 */
+            }
+            
+            .spotify-section {
+                width: 100%;
+                margin: 30px 0;
+                padding: 0 15px; /* 给左右留点呼吸感 */
+                box-sizing: border-box;
+            }
+        }
+
+        /* ========== 修复：移动端选项文本排版 (精准修复版) ========== */
+        /* 策略：左对齐 + 禁止在汉字中断行，并确保文本块自然流动 */
+
+        .option .option-text {
+            /* 1. 改用左对齐，避免justify导致的标点问题 */
+            text-align: left;
+            /* 2. 保持中文词汇完整，不在汉字中间断开 */
+            word-break: keep-all;
+            /* 3. 允许过长的英文/数字连续字符在合适位置断开 */
+            overflow-wrap: break-word;
+            /* 4. 移除任何可能妨碍文本自然宽度的限制 */
+            min-width: 0;
+            /* 5. 确保行高，提升可读性 */
+            line-height: 1.6;
+            /* 6. 设置为行内块元素，确保与A. B. C. D.标签保持在同一文本流中 */
+            display: inline;
+        }
+
+        /* 移动端专属微调 */
+        @media (max-width: 768px) {
+            .option .option-text {
+                /* 可选：稍微收紧字距，使排版在窄屏下更紧凑 */
+                letter-spacing: -0.01em;
+            }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .aplayer {
+                width: 100% !important;
+                margin: 0 !important;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+                border: none !important;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+
+            .start-page h1 {
+                font-size: 1.8rem;
+            }
+
+            .question-text {
+                font-size: 1.05rem;
+            }
+
+            .option {
+                padding: 18px 20px;
+            }
+
+            .result-name {
+                font-size: 1.7rem;
+            }
+
+            .result-lyric {
+                font-size: 0.95rem;
+            }
+
+            
+        }
+
+        /* 隐藏canvas */
+        #shareCanvas {
+            display: none;
+        }
+
+                @media (max-width: 768px) {
+            .spotify-player {
+                max-width: 100%;
+                margin: 0 10px;
+            }
+            
+            .spotify-label {
+                font-size: 0.8rem;
+            }
+            
+            /* 确保MetingJS播放器在移动端正常显示 */
+            .aplayer .aplayer-body {
+                padding: 10px;
+            }
+            
+            .aplayer .aplayer-list {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== 电脑端 APlayer 播放器修复 ========== */
+        @media (min-width: 769px) {
+            /* 1. 强制重置所有APlayer按钮大小 */
+            .aplayer .aplayer-icon {
+                width: 24px !important;
+                height: 24px !important;
+                font-size: 18px !important;
+            }
+            
+            /* 2. 播放按钮容器 */
+            .aplayer .aplayer-play, 
+            .aplayer .aplayer-pause {
+                width: 32px !important;
+                height: 32px !important;
+                margin: 0 8px !important;
+            }
+            
+            /* 3. SVG图标强制缩放 */
+            .aplayer svg {
+                width: 20px !important;
+                height: 20px !important;
+                transform: scale(0.7) !important;
+            }
+        }
+
+        .spotify-player {
+            display: flex;
+            justify-content: center;
+        }
+
+        .aplayer {
+            width: 100% !important;
+            max-width: 320px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="bg-decoration"></div>
+
+    <div class="container">
+        <!-- 开始页 -->
+        <div class="start-page" id="startPage">
+            <h1>如果你也喜欢台女</h1>
+            <p class="subtitle">寻找与你灵魂匹配的岛屿女声ଘ(੭ˊᵕˋ)੭</p>
+            <div class="divider"></div>
+            <button class="start-btn" onclick="startQuiz()">开始测试</button>
+        </div>
+
+        <!-- 题目页 -->
+        <div class="quiz-page" id="quizPage">
+            <div class="quiz-header">
+                <div class="progress">第 <span id="currentNum">1</span> 题 / 共 17 题</div>
+                <div class="question-text" id="questionText"></div>
+            </div>
+            <div class="options" id="optionsContainer"></div>
+        </div>
+
+        <!-- 结果页 -->
+        <div class="result-page" id="resultPage">
+            <div class="result-label">与你灵魂匹配的台女是</div>
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="result-name" id="resultName"></div>
+            <div class="result-lyric" id="resultLyric"></div>
+            <div class="spotify-section" id="spotifySection">
+                <div class="spotify-label">🎧 歌曲试听</div>
+                <div class="spotify-player" id="spotifyPlayer"></div>
+            </div>
+            <div class="result-actions">
+                   <button class="restart-btn" onclick="restartQuiz()">再测一次</button>
+            </div>
+            <div class="result-note">台女是一种vibe，结果仅供娱乐:P </div>
+            </div>
+        </div>
+
+    <script>
+        // 题目数据
+        const questions = [
+            {
+                id: 1,
+                text: "一群朋友聊天时，有人突然沉默了，你通常会：",
+                options: [
+                    { label: "A", text: "注意到，但想说『没关系啦，想安静一下很正常』，就先不打扰", singers: ["陈绮贞", "陈小霞", "柯泯薰"] },
+                    { label: "B", text: "偷偷观察一下，等散场后再私聊TA：『欸，你今天还好吗？』", singers: ["刘若英", "梁静茹", "蔡琴"] },
+                    { label: "C", text: "直接问：『怎么啦？表情这么严肃～』用比较轻松的方式关心", singers: ["孙燕姿", "徐佳莹", "陈嘉桦"] },
+                    { label: "D", text: "继续嗨啊！除非TA真的脸很臭，不然就一起玩嘛～", singers: ["张惠妹", "萧亚轩", "徐怀钰"] }
+                ]
+            },
+            {
+                id: 2,
+                text: "接到一个超难又急到爆的任务，你第一个念头是：",
+                options: [
+                    { label: "A", text: "『我可以，但要熬夜了。』默默打开电脑开始规划", singers: ["蔡健雅", "戴佩妮", "陈珊妮"] },
+                    { label: "B", text: "『先做做看啊，不行再想别的办法～』立刻开动！", singers: ["张悬", "郑宜农", "王若琳"] },
+                    { label: "C", text: "『一个人不行啦！』马上找朋友或同事求救", singers: ["范玮琪", "任家萱", "曾沛慈"] },
+                    { label: "D", text: "『天啊又来了！』抱怨三分钟，然后拼了命搞定", singers: ["杨乃文", "魏如萱", "杨丞琳"] }
+                ]
+            },
+            {
+                id: 3,
+                text: "路过一家小店，里面正在放一首你没听过的歌。最先吸引你注意的是：",
+                options: [
+                    { label: "A", text: "旋律的走向，比如突然升高的那句，让人想听第二次", singers: ["徐佳莹", "孙燕姿", "田馥甄"] },
+                    { label: "B", text: "歌词里的一句话，让你想停下脚步听完整首", singers: ["林忆莲", "万芳", "安溥"] },
+                    { label: "C", text: "节奏啊！会让人不自觉想『咚滋咚滋』跟着动", singers: ["范晓萱", "蔡依林", "王心凌"] },
+                    { label: "D", text: "声音，嗓音一出来就觉得：『哇，这声音很可以！』", singers: ["黄丽玲", "张韶涵", "蔡琴", "徐怀钰"] }
+                ]
+            },
+            {
+                id: 4,
+                text: "在一家很有风格的小店，有几件衣服让你眼睛一亮。你最可能先拿起哪一件？",
+                options: [
+                    { label: "A", text: "一件素色棉麻衬衫，袖口有别致的手工刺绣", singers: ["陈绮贞", "柯泯薰", "曾沛慈"] },
+                    { label: "B", text: "一件不规则剪裁的黑色外套，五金配饰可以按斤卖", singers: ["杨乃文", "陈珊妮", "戴佩妮"] },
+                    { label: "C", text: "一件柔软的针织开衫，颜色很温柔", singers: ["刘若英", "梁静茹", "林忆莲"] },
+                    { label: "D", text: "一件超亮眼的吊带裙，一眼就能在人群中被看到", singers: ["萧亚轩", "张惠妹", "徐怀钰"] }
+                ]
+            },
+            {
+                id: 5,
+                text: "看完一部超好哭的电影，散场后你最可能：",
+                options: [
+                    { label: "A", text: "一个人慢慢走回家，反复回想某个镜头", singers: ["陈小霞", "安溥", "蔡健雅"] },
+                    { label: "B", text: "立刻传讯息给朋友：『快去看！太好哭了！』", singers: ["范玮琪", "任家萱", "陈嘉桦"] },
+                    { label: "C", text: "去唱K或跑步，把那种闷闷的感觉甩掉", singers: ["张韶涵", "黄丽玲", "蔡依林"] },
+                    { label: "D", text: "回家写一段文字发在社交小号，仅自己可见", singers: ["魏如萱", "田馥甄", "张悬"] }
+                ]
+            },
+            {
+                id: 6,
+                text: "如果你在一支即将远航的船队上，你更像是：",
+                options: [
+                    { label: "A", text: "看地图决定方向的人，『我觉得往这边开比较对～』", singers: ["蔡健雅", "戴佩妮", "陈珊妮"] },
+                    { label: "B", text: "第一个看到新大陆的人，然后大喊：『有岛欸！』", singers: ["张惠妹", "魏如萱", "张韶涵"] },
+                    { label: "C", text: "默默检查绳子、补帆的人，确保船不会开到一半散掉", singers: ["孙燕姿", "梁静茹", "曾沛慈"] },
+                    { label: "D", text: "在船舱里写航海日志、修理仪器的人，不太露面但很重要", singers: ["郑宜农", "范晓萱", "王若琳"] }
+                ]
+            },
+            {
+                id: 7,
+                text: "如果你有一个礼拜完全自由的时间，你最想：",
+                options: [
+                    { label: "A", text: "独自去山里或海边，带几本书和空白笔记本", singers: ["陈绮贞", "安溥", "柯泯薰"] },
+                    { label: "B", text: "去一个没去过的城市，逛旧书店、菜市场、美术馆", singers: ["田馥甄", "刘若英", "万芳"] },
+                    { label: "C", text: "约一群朋友包栋民宿，煮饭、唱歌、聊天到天亮", singers: ["杨丞琳", "王心凌", "任家萱"] },
+                    { label: "D", text: "飞去音乐节或者追喜欢的歌手巡演，连看两场～", singers: ["杨乃文", "张悬", "郑宜农"] }
+                ]
+            },
+            {
+                id: 8,
+                text: "下面哪一句话，最接近你的人生信条？",
+                options: [
+                    { label: "A", text: "我已留下我的身体在光的旁边，我已唱完诞生之物的悲伤 —— 皮扎尼克", singers: ["杨乃文", "范晓萱", "魏如萱"] },
+                    { label: "B", text: "我偏爱写诗的荒谬，胜过不写诗的荒谬 —— 辛波斯卡", singers: ["张悬", "陈珊妮", "王若琳"] },
+                    { label: "C", text: "穿过寒冷夜晚的田野，不停地寻找，穿过河流，穿过一无所有的空气 —— 玛格丽特·阿特伍德", singers: ["林忆莲", "蔡依林", "张韶涵"] },
+                    { label: "D", text: "假如我能让一颗心不再破碎，我将不枉此生 —— 艾米莉·狄金森", singers: ["万芳", "徐佳莹", "梁静茹", "徐怀钰"] }
+                ]
+            },
+            {
+                id: 9,
+                text: "当你发现自己喜欢上一个人，你最可能怎么做？",
+                options: [
+                    { label: "A", text: "默默关注，在记事本写很多不敢传出去的讯息，等对方先开口", singers: ["陈绮贞", "陈小霞", "柯泯薰"] },
+                    { label: "B", text: "直球！大胆告诉对方，哪怕可能被拒绝", singers: ["张惠妹", "萧亚轩", "陈嘉桦"] },
+                    { label: "C", text: "用行动暗示，比如为对方做一件事或送一个小礼物", singers: ["刘若英", "曾沛慈", "徐佳莹"] },
+                    { label: "D", text: "先观察一阵子，确认安全后才慢慢靠。", singers: ["蔡健雅", "孙燕姿", "田馥甄"] }
+                ]
+            },
+            {
+                id: 10,
+                text: "你觉得自己最鲜活的时刻是：",
+                options: [
+                    { label: "A", text: "读完一本很厉害的书或看完一部闷闷的文艺片", singers: ["安溥", "张悬", "郑宜农"] },
+                    { label: "B", text: "做一件重复的事，像是煮饭、整理房间、散步", singers: ["蔡健雅", "刘若英", "万芳"] },
+                    { label: "C", text: "听到一首完全没听过的音乐，风格很怪但超喜欢", singers: ["魏如萱", "范晓萱", "王若琳"] },
+                    { label: "D", text: "运动到大爆汗，然后冲个热水澡，整个人超累但超爽", singers: ["蔡依林", "张惠妹", "杨丞琳"] }
+                ]
+            },
+            {
+                id: 11,
+                text: "一个周末，你没有任何安排，手机也没人找。你感觉：",
+                options: [
+                    { label: "A", text: "超棒的啊！终于可以好好充电，社交真的很耗能量", singers: ["陈小霞", "陈珊妮", "柯泯薰"] },
+                    { label: "B", text: "第一天很舒服，但超过两天就会想找人说说话", singers: ["孙燕姿", "田馥甄", "戴佩妮"] },
+                    { label: "C", text: "不太行欸，会主动约朋友，或是去咖啡馆坐着", singers: ["梁静茹", "范玮琪", "任家萱"] },
+                    { label: "D", text: "看心情咯，有时很享受，有时又会觉得有点孤单", singers: ["王心凌", "杨丞琳", "徐怀钰"] }
+                ]
+            },
+            {
+                id: 12,
+                text: "你更常怀念的是：",
+                options: [
+                    { label: "A", text: "某个具体的夏天、某个人、某句没说完的话", singers: ["陈绮贞", "魏如萱", "郑宜农"] },
+                    { label: "B", text: "一种氛围，像是青春的迷茫，或是二十几岁的疯狂", singers: ["万芳", "刘若英", "林忆莲"] },
+                    { label: "C", text: "几乎不怀念，觉得现在和未来比较重要", singers: ["蔡依林", "萧亚轩", "张韶涵"] },
+                    { label: "D", text: "那些独自完成某件事的时刻", singers: ["蔡健雅", "戴佩妮", "王若琳"] }
+                ]
+            },
+            {
+                id: 13,
+                text: "如果要你为一出小岛电影写主题曲，你会最想写出什么样的感觉？",
+                options: [
+                    { label: "A", text: "人物内心那些说不清的皱褶与独白", singers: ["安溥", "万芳", "陈小霞"] },
+                    { label: "B", text: "一段关系里，光的形状与阴影的浓度", singers: ["徐佳莹", "梁静茹", "蔡健雅", "郑宜农"] },
+                    { label: "C", text: "一个时代的噪音，一场安静的叛变", singers: ["杨乃文", "陈珊妮", "范晓萱"] },
+                    { label: "D", text: "巨大的爱，或毁灭后的重生与庆典", singers: ["张惠妹", "黄丽玲", "蔡琴"] }
+                ]
+            },
+            {
+                id: 14,
+                text: "你认为人与人之间最深刻的联结，通常建立在什么之上？",
+                options: [
+                    { label: "A", text: "共享的孤独，以及对这种孤独的相互指认", singers: ["陈绮贞", "柯泯薰", "王若琳"] },
+                    { label: "B", text: "时间的积累，共同经历的大小事件与陪伴", singers: ["刘若英", "范玮琪", "任家萱"] },
+                    { label: "C", text: "直觉的吸引，一种不讲道理的默契与合拍", singers: ["萧亚轩", "徐怀钰", "杨丞琳", "郑宜农"] },
+                    { label: "D", text: "价值观的共鸣，对世界有相似的看法与坚持", singers: ["张悬", "孙燕姿", "田馥甄"] }
+                ]
+            },
+            {
+                id: 15,
+                text: "当你觉得自己很差劲、很没用的时候，最能帮你找回力量的是什么？",
+                options: [
+                    { label: "A", text: "持续的创作，在书写或旋律中厘清自己", singers: ["戴佩妮", "郑宜农", "陈珊妮"] },
+                    { label: "B", text: "亲友的信任，他们眼中那个『很好的我』", singers: ["曾沛慈", "陈嘉桦", "王心凌"] },
+                    { label: "C", text: "身体的行动，用努力与成功证明『我可以』", singers: ["蔡依林", "张惠妹", "张韶涵"] },
+                    { label: "D", text: "彻底的独处，等待情绪沉淀后的自我和解", singers: ["安溥", "杨乃文", "林忆莲"] }
+                ]
+            },
+            {
+                id: 16,
+                text: "在这个数字听歌的时代，如果一张你很爱的专辑要出实体版，你最在意的细节是：",
+                options: [
+                    { label: "A", text: "拿在手里的质感与装帧的温度，最好连纸张的纹理都有讲究", singers: ["陈绮贞", "田馥甄", "魏如萱"] },
+                    { label: "B", text: "能实实在在地放进唱盘，享受唱盘转动或按下播放键的仪式感", singers: ["蔡琴", "万芳", "刘若英", "林忆莲"] },
+                    { label: "C", text: "附带周边的实用感与陪伴感，比如日历或是帆布袋", singers: ["孙燕姿", "徐佳莹", "曾沛慈", "任家萱", "陈嘉桦"] },
+                    { label: "D", text: "视觉上的绝对冲击，摆在架子上本身就是极具风格的自我表达", singers: ["蔡依林", "张惠妹", "杨乃文", "萧亚轩"] }
+                ]
+            },
+            {
+                id: 17,
+                text: "有一首歌，在你的播放列表里躺了超久，更可能是因为：",
+                options: [
+                    { label: "A", text: "它是某个时期的主题曲。前奏一响，就像闻到补习班的味道，或想起第一次心跳漏拍的瞬间", singers: ["梁静茹", "王心凌", "杨丞琳", "徐怀钰"] },
+                    { label: "B", text: "它是后知后觉的预言。最初只是耳边掠过的旋律，直到某天，那些句子突然有了重量，沉沉地落到你的故事里", singers: ["陈小霞", "蔡健雅", "黄丽玲", "张韶涵"] },
+                    { label: "C", text: "它是随身携带的庇护所。戴上耳机循环播放，能帮我重新找到呼吸的节奏", singers: ["张悬", "安溥", "郑宜农", "柯泯薰"] },
+                    { label: "D", text: "它变成了生活里的底噪。不用刻意去听，但在漫长的日常里随机播放到，就会觉得安心", singers: ["范晓萱", "王若琳", "戴佩妮", "陈珊妮", "范玮琪"] }
+                ]
+            }
+        ];
+
+        // 歌手数据
+        const singers = {
+            "陈绮贞": { name: "陈绮贞", lyric: "为什么你总沉迷于某种神奇的幻想？", emoji: "🎸", neteaseId: "209394" },
+            "张悬": { name: "张悬", lyric: "我拥有的都是侥幸，我失去的都是人生。", emoji: "🌊", neteaseId: "326705" },
+            "安溥": { name: "安溥", lyric: "你能问我吗，当时我怎么想。", emoji: "🌙", neteaseId: "2672465506" },
+            "杨乃文": { name: "杨乃文", lyric: "一霎风雨我爱过你，几度雨停我爱自己。", emoji: "⚡", neteaseId: "315962" },
+            "陈珊妮": { name: "陈珊妮", lyric: "极大的时代，爱是极微的拥有。", emoji: "🖤", neteaseId: "506986736" },
+            "魏如萱": { name: "魏如萱", lyric: "做自己的太阳，你就能当别人的光。", emoji: "🎭", neteaseId: "1404530796" },
+            "万芳": { name: "万芳", lyric: "我们不要伤心了。", emoji: "🌸", neteaseId: "297895" },
+            "郑宜农": { name: "郑宜农", lyric: "我们能短暂的笑得像个奇迹。", emoji: "🌿", neteaseId: "2035281610" },
+            "柯泯薰": { name: "柯泯薰", lyric: "等你拥有勇气，我们就翩翩起舞。", emoji: "✨", neteaseId: "29827175" },
+            "陈小霞": { name: "陈小霞", lyric: "自由在黑暗中多么清楚。", emoji: "🎵", neteaseId: "210515" },
+            "林忆莲": { name: "林忆莲", lyric: "或是你我总是渴望自由，终于懂了生命大于爱。", emoji: "🌹", neteaseId: "255578" },
+            "刘若英": { name: "刘若英", lyric: "爱是天时地利的迷信。", emoji: "📖", neteaseId: "254328" },
+            "梁静茹": { name: "梁静茹", lyric: "生命宛如静静的相拥的河，永远天长地久。", emoji: "🍃", neteaseId: "254059" },
+            "徐佳莹": { name: "徐佳莹", lyric: "我会期待幸福，不在乎那会有多曲折。", emoji: "🌈", neteaseId: "306646" },
+            "田馥甄": { name: "田馥甄", lyric: "在世界尽头，一二三睁开眼做个梦。", emoji: "🌵", neteaseId: "2695954436" },
+            "孙燕姿": { name: "孙燕姿", lyric: "我会记得这一刻，那些还飞翔着，不可思议的梦。", emoji: "☀️", neteaseId: "287318" },
+            "蔡健雅": { name: "蔡健雅", lyric: "爱为何总填不满又掏不空。", emoji: "🎸", neteaseId: "209108" },
+            "张惠妹": { name: "张惠妹", lyric: "在我心上用力的开一枪，让一切归零在这声巨响。", emoji: "🔥", neteaseId: "454828889" },
+            "蔡依林": { name: "蔡依林", lyric: "庆祝今天无拘无束，预祝明天找到幸福。", emoji: "👑", neteaseId: "209515" },
+            "萧亚轩": { name: "萧亚轩", lyric: "爱是这样不可理喻，百听你不厌才是好证据。", emoji: "💃", neteaseId: "307472" },
+            "王心凌": { name: "王心凌", lyric: "天空是绵绵的糖，就算塌下来又怎样。", emoji: "🍬", neteaseId: "1956717123" },
+            "杨丞琳": { name: "杨丞琳", lyric: "带我走，到遥远的以后。", emoji: "🎀", neteaseId: "26082345" },
+            "黄丽玲": { name: "黄丽玲", lyric: "旅途还遥远，沿途风景如诗变迁。", emoji: "🎤", neteaseId: "1403236162" },
+            "张韶涵": { name: "张韶涵", lyric: "有人夸我勇敢，一直都在微笑的我，忽然留下泪滴。", emoji: "🪽", neteaseId: "327164" },
+            "范晓萱": { name: "范晓萱", lyric: "青春若有张不老的脸，但愿她永远不被改变。", emoji: "🎹", neteaseId: "230587" },
+            "戴佩妮": { name: "戴佩妮", lyric: "我只想要往前飞，能飞多远也无所谓。",  emoji: "🎼", neteaseId: "223842" },
+            "王若琳": { name: "王若琳", lyric: "迷宫一样的未来，转一个圈，会到哪里。", emoji: "🥃", neteaseId: "4873594" },
+            "蔡琴": { name: "蔡琴", lyric: "我不能停止怀念，怀念你，怀念从前。", emoji: "🕯️", neteaseId: "29005019" },
+            "曾沛慈": { name: "曾沛慈", lyric: "我穿梭金星木星水星火星土星追寻。", emoji: "🎭", neteaseId: "371446" },
+            "徐怀钰": { name: "徐怀钰", lyric: "我就是喜欢孩子气，纯洁天真无比。", emoji: "💖", neteaseId: "308244" },
+            "任家萱": { name: "任家萱", lyric: "时间会去理清，真正的感受。", emoji: "🌞", neteaseId: "29999649" },
+            "陈嘉桦": { name: "陈嘉桦", lyric: "长不大，真的相信，地会久，天会长。", emoji: "🤘", neteaseId: "1369740951" },
+            "范玮琪": { name: "范玮琪", lyric: "一闪一闪亮晶晶，遗憾的故事都很美丽。", emoji: "⭐", neteaseId: "229141" }
+        };
+
+        // 歌手列表顺序（用于平局处理）
+        const singerOrder = [
+            "林忆莲", "刘若英", "梁静茹", "徐佳莹", 
+            "田馥甄", "孙燕姿", "蔡健雅", "张惠妹", "蔡依林", 
+            "萧亚轩", "王心凌", "杨丞琳", "黄丽玲", "张韶涵", 
+            "范晓萱", "戴佩妮", "王若琳", "蔡琴", "曾沛慈", "徐怀钰", "任家萱", "陈嘉桦", "范玮琪", 
+            "陈绮贞", "张悬", "安溥", "杨乃文", "陈珊妮", "魏如萱", "万芳", "郑宜农", "柯泯薰", "陈小霞"
+        ];
+
+        // 状态
+        let currentQuestion = 0;
+        let scores = {};
+        let selectedSingersPerQuestion = [];
+
+        // 初始化分数
+        function initScores() {
+            scores = {};
+            singerOrder.forEach(singer => {
+                scores[singer] = 0;
+            });
+            selectedSingersPerQuestion = [];
+        }
+
+        // 开始测试
+        function startQuiz() {
+            initScores();
+            currentQuestion = 0;
+            document.getElementById('startPage').style.display = 'none';
+            document.getElementById('quizPage').style.display = 'block';
+            showQuestion();
+        }
+
+        // 显示题目
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('currentNum').textContent = currentQuestion + 1;
+            document.getElementById('questionText').textContent = question.text;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.innerHTML = `
+                    <span class="option-label">${option.label}</span>
+                    <span class="option-text">${option.text}</span>
+                `;
+                optionDiv.onclick = () => selectOption(option.singers);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        // 选择选项
+        function selectOption(singerList) {
+            // 记录本题选择的歌手
+            selectedSingersPerQuestion.push(singerList);
+
+            // 计分
+            singerList.forEach(singer => {
+                scores[singer]++;
+            });
+
+            // 下一题或结果
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                // 添加淡出效果
+                const quizPage = document.getElementById('quizPage');
+                quizPage.style.opacity = '0';
+                setTimeout(() => {
+                    showQuestion();
+                    quizPage.style.opacity = '1';
+                }, 300);
+            } else {
+                showResult();
+            }
+        }
+
+        // 计算结果
+        // 增强版结果计算函数（推荐替换原 calculateResult 函数）
+        function calculateResultEnhanced() {
+            // 1. 基础计分（同原逻辑）
+            let maxScore = -1;
+            let topSingers = [];
+            for (const singer in scores) {
+                if (scores[singer] > maxScore) {
+                    maxScore = scores[singer];
+                    topSingers = [singer];
+                } else if (scores[singer] === maxScore) {
+                    topSingers.push(singer);
+                }
+            }
+            // 无平局，直接返回
+            if (topSingers.length === 1) {
+                return topSingers[0];
+            }
+            console.log(`初始平局歌手: ${topSingers.join(', ')}`);
+
+            // 2. 第一轮筛选：回溯关键题目
+            // 选择能区分当前平局歌手的题目（即该题选项中只包含部分平局歌手）
+            for (let q = 0; q < questions.length; q++) {
+                const question = questions[q];
+                const chosenSingers = selectedSingersPerQuestion[q];
+                // 找出在该题被选中，且仍在平局名单中的歌手
+                const singersInThisQuestion = topSingers.filter(singer => 
+                    chosenSingers.includes(singer)
+                );
+                // 如果该题恰好能区分出唯一一位
+                if (singersInThisQuestion.length === 1) {
+                    console.log(`第${q+1}题打破平局，选中: ${singersInThisQuestion[0]}`);
+                    return singersInThisQuestion[0];
+                }
+                // 如果能缩小平局范围，则更新名单，继续用后续题目筛选
+                if (singersInThisQuestion.length > 0 && singersInThisQuestion.length < topSingers.length) {
+                    topSingers = singersInThisQuestion;
+                    console.log(`第${q+1}题缩小范围至: ${topSingers.join(', ')}`);
+                }
+            }
+
+            // 3. 第二轮筛选：比较“胜出场次”（独家出现次数）
+            // 计算每位平局歌手在多少道题中是“独家选项”（该题所有选中歌手中只有她一人）
+            const exclusiveWins = {};
+            let maxExclusiveWins = -1;
+            let finalCandidates = [];
+            
+            topSingers.forEach(singer => {
+                let count = 0;
+                for (let q = 0; q < questions.length; q++) {
+                    const chosenSingers = selectedSingersPerQuestion[q];
+                    // 如果该题只选中了这位歌手一人
+                    if (chosenSingers.length === 1 && chosenSingers[0] === singer) {
+                        count++;
+                    }
+                }
+                exclusiveWins[singer] = count;
+                if (count > maxExclusiveWins) {
+                    maxExclusiveWins = count;
+                    finalCandidates = [singer];
+                } else if (count === maxExclusiveWins) {
+                    finalCandidates.push(singer);
+                }
+            });
+            if (finalCandidates.length === 1) {
+                console.log(`根据独家胜出场次选出: ${finalCandidates[0]}`);
+                return finalCandidates[0];
+            }
+
+            // 4. 终极平局：使用歌手顺序（原逻辑，但作为最后手段）
+            console.log(`终极平局，按歌手顺序列表裁决`);
+            for (let i = 0; i < singerOrder.length; i++) {
+                if (finalCandidates.includes(singerOrder[i])) {
+                    return singerOrder[i];
+                }
+            }
+            // 保底返回
+            return finalCandidates[0];
+        }
+
+        // 显示结果
+        function showResult() {
+            const resultSinger = calculateResultEnhanced();
+            const singerInfo = singers[resultSinger];
+
+            document.getElementById('quizPage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'block';
+
+            document.getElementById('resultEmoji').textContent = singerInfo.emoji;
+            document.getElementById('resultName').textContent = singerInfo.name;
+            document.getElementById('resultLyric').textContent = singerInfo.lyric;
+            
+           // 显示网易云音乐播放器 (使用MetingJS)
+            const spotifySection = document.getElementById('spotifySection');
+            const spotifyPlayer = document.getElementById('spotifyPlayer');
+            
+            if (singerInfo.neteaseId) {
+                // 清空之前的内容
+                spotifyPlayer.innerHTML = '';
+                
+                // 创建MetingJS播放器元素
+                const metingElement = document.createElement('meting-js');
+                
+                // 设置播放器属性
+                metingElement.setAttribute('server', 'netease');
+                metingElement.setAttribute('type', 'song');
+                metingElement.setAttribute('id', singerInfo.neteaseId);
+                metingElement.setAttribute('autoplay', 'false');
+                metingElement.setAttribute('theme', '#8B9A7D'); 
+                metingElement.setAttribute('mini', 'false'); 
+                
+                spotifyPlayer.appendChild(metingElement);
+                spotifySection.style.display = 'block';
+            }
+
+        // 重新测试
+        function restartQuiz() {
+            initScores();
+            currentQuestion = 0;
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('startPage').style.display = 'block';
+        }
+
+            // 背景色
+            ctx.fillStyle = '#F8F6F1';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 装饰圆形
+            ctx.fillStyle = 'rgba(139, 154, 125, 0.1)';
+            ctx.beginPath();
+            ctx.arc(500, 100, 120, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(212, 181, 168, 0.1)';
+            ctx.beginPath();
+            ctx.arc(80, 700, 100, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 标题
+            ctx.fillStyle = '#4A4A48';
+            ctx.font = '300 20px "Noto Serif SC", serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('测测你是哪个台湾女歌手', canvas.width / 2, 80);
+
+            // 分隔线
+            ctx.strokeStyle = '#C5C5C0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(220, 110);
+            ctx.lineTo(380, 110);
+            ctx.stroke();
+
+            // Emoji
+            ctx.font = '80px serif';
+            ctx.fillText(resultEmoji, canvas.width / 2, 220);
+
+            // 歌手名字
+            ctx.fillStyle = '#4A4A48';
+            ctx.font = '500 42px "Noto Serif SC", "Cormorant Garamond", serif';
+            ctx.fillText(resultName, canvas.width / 2, 320);
+
+            // 歌词
+            ctx.fillStyle = '#8B9A7D';
+            ctx.font = 'italic 22px "Noto Serif SC", serif';
+            ctx.fillText('"' + resultLyric + '"', canvas.width / 2, 400);
+
+            // 分隔线2
+            ctx.strokeStyle = '#D4B5A8';
+            ctx.beginPath();
+            ctx.moveTo(270, 440);
+            ctx.lineTo(330, 440);
+            ctx.stroke();
+
+            // 描述
+            ctx.fillStyle = '#4A4A48';
+            ctx.font = '20px "Noto Serif SC", serif';
+            ctx.fillText(resultDesc, canvas.width / 2, 500);
+
+            // 底部文字
+            ctx.fillStyle = '#8B9A7D';
+            ctx.font = '14px "Noto Serif SC", serif';
+            ctx.fillText('扫码测试，发现你的台女文艺人格', canvas.width / 2, 720);
+
+            // 下载图片
+            const link = document.createElement('a');
+            link.download = '我是' + resultName + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+
+</body>
+</html>
